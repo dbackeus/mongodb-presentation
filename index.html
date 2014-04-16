@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>MongoDB</title>
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/default.css" id="theme">
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+	<link rel="stylesheet" href="http://marketmesuite.github.io/3D-CORNER-RIBBONS/css/3d-corner-ribbons.css">
+	<style type="text/css">
+		.banner { z-index: 100 }
+		.banner .text { text-align: center; font-family: Lato, sans-serif;}
+
+		.ribbon .banner::after,
+		.ribbon .banner::before {
+			background-color: #6d1b06
+		}
+		.ribbon .text::before,
+		.ribbon .text::after,
+		.no-css-transforms .ribbon .text {
+			background-color: #a52808
+		}
+
+		pre { position: relative; }
+	</style>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$("[data-ribbon]").each(function(i, element) {
+				var ribbonText = $(element).data().ribbon
+				var ribbonStyle = $(element).data().ribbonStyle || ""
+				var ribbon = $('<div class="ribbon '+ribbonStyle+'"><div class="banner"><div class="text">'+ribbonText+'</div></div></div>')
+				ribbon.prependTo(element)
+			})
+		})
+	</script>
+</head>
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section data-id="bb2a2d55f7884b327b0f3efe8c44566f">
+				<section data-id="20ddecdfaa5648405f67d89b43fbf356">
+					<h2>MongoDB</h2>
+					<p class="fragment">A document oriented database for web apps</p>
+					<p class="fragment">Stores BSON documents in collections (schemaless tables)</p>
+					<p class="fragment">Similar query capabilities as SQL but via JavaScript API</p>
+					<br>
+					<div class="fragment">
+						<h3>Sweet Defaults</h3>
+						<p>UTF-8 / UTC / JavaScript</p>
+					</div>
+					<br>
+					<div class="fragment">
+						<h3>Sweet Extras</h3>
+						<p>Geospatial indexes / Full text search / GridFS</p>
+					</div>
+				</section>
+				<section data-id="30e27e8660f7ae4ac27397e80241c8d3">
+					<h3>Javascript + bson</h3>
+<pre data-ribbon="Postgres"><code class="bash">psql</code><code>CREATE DATABASE mydatabase ENCODING = 'UTF8' LC_COLLATE='xxx' LC_CTYPE='xxx';
+\c mydatabase
+CREATE TABLE users (id SERIAL PRIMARY KEY, name varchar(255), age int);
+INSERT INTO users (name, age) VALUES ('David', 30);
+INSERT INTO users (name, age) VALUES ('Teo', 17);
+UPDATE users SET age=19 WHERE name='Teo';
+SELECT * FROM users WHERE name='David';
+-- id | name  | age
+-- 1  | David | 30
+\q</code></pre>
+							<p>VS</p>
+<pre data-ribbon="Mongo" class="fragment"><code class="bash">mongo mydatabase</code><code class="javascript">db.users.insert({name: "David", age: 30})
+db.users.insert({name: "Teo", age: 17})
+db.users.find({name: "David"})
+// {"_id" : ObjectId("533ed402e00fcbb67fa029d5"), "name": "David", "age": 30}
+db.users.update({name: "Teo"}, {age: 19})
+exit</code></pre>
+					</section>
+					<section data-id="9a6500a46490eaf1ef31a31c55017d7f">
+						<h2>Can <u style="text-decoration: line-through">Rails</u> MongoDB scale?</h2>
+						<ul class="fragment">
+							<li>Craigslist</li>
+							<li>Sourceforge</li>
+							<li>Trello</li>
+							<li>Flowdock</li>
+							<li>Disqus</li>
+							<li>Bit.ly</li>
+							<li>Chartbeat</li>
+							<li>Gauges</li>
+							<li>Foursquare</li>
+							<li>MTV (gametrailers etc)</li>
+							<li>Shutterfly</li>
+							<li>Loggly</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Isn't MongoDB so 3 years ago?</h2>
+						<img src="images/mongotrend.jpg"></img>
+					</section>
+					<section>
+						<h2>Typical Usage Scenarios</h2>
+						<ul>
+							<li class="fragment">Pre-aggregated statistics (chartbeat, gauges etc)</li>
+							<li class="fragment">CMS app database (document oriented + custom attributes)</li>
+							<li class="fragment">Logging with Fire and Forget + Capped Collections</li>
+							<li class="fragment">Web 3.0 (Flowdock, Trello, common for nodejs, default for Meteor)</li>
+              <li class="fragment">Geospatial stuff (Naturkartan, Den Norske Turistforening etc)</li>
+						</ul>
+					</section>
+					<section>
+						<h2>My Mongo experience</h2>
+						<ul>
+							<li class="fragment">Application database at Streamio for 4 years</li>
+							<li class="fragment">Default database for various side projects</li>
+							<li class="fragment">mongo-resque - a fork of Resque using Mongo</li>
+						</ul>
+					</section>
+				</section>
+				<section data-id="739146aa319fbaabbb7ddb95709c5868">
+					<section data-id="db7905b7775369f0e86031e462932a7b">
+						<h2>Mongoid</h2>
+						<ul>
+							<li class="fragment">An ODM (object document mapper) for Ruby</li>
+							<li class="fragment">Based on ActiveModel</li>
+							<li class="fragment">Completely integrated with rails (generators etc)</li>
+							<li class="fragment">
+								Lots of integrations in popular RubyGems:
+								<ul>
+									<li>Devise</li>
+									<li>Delayed Job</li>
+									<li>Paperclip</li>
+									<li>Will Paginate</li>
+									<li>Database Cleaner</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					<section data-id="50261763a289b242c86c2162235c8b05">
+						<h3>The joy of schemaless!</h3>
+<pre data-ribbon="ActiveRecord"><code class="bash">rails new legacy_sql_app</code><code class="ruby">gem 'pg'</code><code class="bash">rake db:create
+rails generate model Person name:string
+rake db:migrate
+# Spec failure surprise!
+rake db:test:prepare
+rails generate migration add_age_to_users age:integer
+rake db:migrate
+# Spec failure surprise!
+rake db:test:prepare</code></pre>
+							<p>VS</p>
+<pre data-ribbon="Mongoid" class="fragment"><code class="bash">rails new --skip-activerecord teh_new_hotness</code><code class="ruby">gem 'mongoid'</code><code class="bash">rails generate model Person name:string</code><code class="ruby">field :age, type: Number # add to user.rb</code></pre>
+					</section>
+					<section data-id="c72be617aa3df7f1f054e8b21c7009dc">
+						<h3>Familiar API</h3>
+						<div>
+<pre data-ribbon="Mongoid"><code class="ruby">class User
+  include Mongoid::Document
+
+  # callbacks from ActiveModel
+  after_create :send_confirmation_email
+
+  # validations from ActiveModel
+  validate_presence_of :foo, if: :bar, on: :create
+
+  # familiar associations api
+  has_many :images, dependent: :destroy
+end
+
+User.find(params[:id])
+User.find_by(foo: "bar")
+User.where(foo: "bar").order_by(created_at: :desc).skip(10).limit(10)
+User.where(:age.gt =&gt; 10, :roles.in =&gt; "administrator") # sweet symbol hacks!
+
+user = User.first
+user.name = "Olle"
+user.save
+user.update_attributes(age: 55)
+</code></pre>
+						</div>
+					</section>
+						<section data-id="67c2c8e7a56e2db3f81025bf826c39d0">
+							<h3>The end of obscure attributes!</h3>
+<pre data-ribbon="ActiveRecord"><code class="ruby">class User &lt; ActiveRecord::Base
+end
+
+# somewhere in schema.rb (hopefully)
+create_table "users" do |t|
+  t.string "name"
+  t.integer "age"
+end</code></pre>
+								<p>VS</p>
+<pre data-ribbon="Mongoid" class="fragment"><code class="ruby">class User
+  include Mongoid::Document
+  field :name, type: String
+  field :age, type: Integer
+end</code></pre>
+						</section>
+						<section data-id="a93b7715f8989db297c22066e6290e2c">
+							<h3>Dynamic default values in ruby!</h3>
+<pre data-ribbon="ActiveRecord"><code>class Account
+  after_initialize :set_default_api_key
+
+  private
+  def set_default_api_key
+    self.api_key ||= Account.generate_api_key unless persisted?
+  end
+end</code></pre>
+								<p>VS</p>
+<pre data-ribbon="Mongoid" class="fragment"><code class="ruby">class Account
+  field :api_key, type: String, default: -&gt; { Account.generate_api_key }
+end</code></pre>
+						</section>
+						<section>
+							<h3>More type freedom</h3>
+							<pre data-ribbon="Mongoid"><code class="ruby">class User
+  field :signed_up_at, type: Time
+  field :tags, type: Array
+  field :custom_data, type: Hash
+  field :accepts_terms_of_agreement, type: Mongoid::Boolean
+end</code></pre>
+						</section>
+					  <section data-id="85c6b84143e298a22736ea64dda91760">
+						  <h3>DRY it up with custom types!</h3>
+<pre data-ribbon="Mongoid"><code class="ruby">class User
+  field :state, type: String, default: "unconfirmed"
+  def state
+    ActiveSupport::StringInquirer.new read_attribute(:state)
+  end
+end
+
+class Video
+  field :state, type: String, default: "pending"
+  def state
+    ActiveSupport::StringInquirer.new read_attribute(:state)
+  end
+end</code></pre>
+<p>VS</p>
+<pre data-ribbon="Mongoid" class="fragment"><code class="ruby">class User
+  field :state, type: Mongoid::StringInquirer, default: "unconfirmed"
+end
+
+class Video
+  field :state, type: Mongoid::StringInquirer, default: "pending"
+end
+
+class Mongoid::StringInquirer &lt; ActiveSupport::StringInquirer
+  def self.demongoize(object)
+    new(object.to_s)
+  end
+end</code></pre>
+						</section>
+						<section data-id="9e5d5ffc1cb89d99acf3da8604272eaf">
+							<h3>Embedded Documents</h3>
+<pre data-ribbon="Mongoid"><code>class Video
+  embeds_many :transcodings
+  field :title, type: String
+end
+
+class Transcoding
+  embedded_in :video
+  field :foo, type: String
+end</code></pre>
+							<div class="fragment">
+								<p>Multiple models within the same document</p>
+<pre><code class="javascript">db.videos.find()</code><code class="json">{
+  "title": "my video",
+  "transcodings": [{"foo": "bar"}, {"foo":"bar"}]
+}</code></pre>
+							</div>
+							<div class="fragment">
+								<p>Nexted objects can still be queried</p>
+<pre><code class="ruby">Video.where("transcodings.foo" =&gt; "bar")</code></pre>
+							</div>
+						</section>
+					</section>
+					<section data-id="b78da8668d137338ca638f06eabffc97">
+						<section data-id="2cc60b199ca3dca36fc0048d073079f8">
+							<h2>Caveats</h2>
+							<p>No transactions / rollbacks</p>
+<pre><code class="ruby">ActiveRecord.transaction do
+  # Ain't gonna happen
+end</code></pre>
+							<p>No joins</p>
+<pre><code class="ruby">Account.includes(:videos).all</code></pre>
+<pre class="fragment"><code class="ruby">Account.joins(:videos).where(videos: {state: "ready"})</code></pre>
+						</section>
+						<section data-id="829ad8eb68c8bfddf96a6e1646ed2a2c">
+							<h3>Weak Consistency</h3>
+							<p>Be wary of FUD!</p>
+              <p><br></p>
+							<p>MongoDB used to be "fire and forget" by default</p>
+							<p>Since 2012 all writes are verified by default</p>
+							<p>Use "journaled" write concern if paranoid</p>
+							<p>
+								<br>
+							</p>
+							<p>Mongo is designed to be replicated</p>
+							<p>Automatic "real-time" failover built in</p>
+							<p>Better and simpler than Postgres etc</p>
+							<p>Chill out!</p>
+						</section>
+						<section data-id="ec7b4b17dfab2b1c3bb53fc013dba248">
+							<h2>Space Inefficiency</h2>
+							<div>No micro optimizations on data types</div>
+							<div>
+<pre data-ribbon="Postgres" data-ribbon-style="ribbon-small"><code class="bash">varchar(30), char(5), text
+smallint, integer, bigint, decimal, numeric, real, double precision etc</code></pre>
+								<p>VS</p>
+<pre data-ribbon="Mongo" data-ribbon-style="ribbon-small"><code class="bash">strings (utf-8 based)
+int32, int64, double (dynamically assigned types based on input number)</code></pre>
+							</div>
+							<div class="fragment">
+								<p>Keys are stored in each document</p>
+<pre data-ribbon="Postgres" data-ribbon-style="ribbon-small"><code class="bash">id | name  | age
+1  | david | 30
+2  | teo   | 17</code></pre>
+								<p>VS</p>
+<pre data-ribbon="Mongo" data-ribbon-style="ribbon-small"><code class="json">{"_id": "xxx", "name": "David", "age": 30}</code><code>{"_id": "xxx", "name": "Teo", "age": 17, "long_key_takes_up_more_space": true}</code></pre>
+							</div>
+						</section>
+						<section data-id="d7d66476471285d564c7ad7a2a44802c">
+							<h2>ALL YOUR RAM ARE BELONG TO US</h2>
+							<p>MongoDB will use as much RAM as it can</p>
+              <ol>
+                <li>Indexes</li>
+                <li>Hot Data</li>
+                <li>All Data</li>
+              </ol>
+							<div>Make sure at least indexes fit in RAM</div>
+						</section>
+					</section>
+					<section data-id="5acb489b3937959bbd3b861271a11849">
+						<section>
+							<h2>MongoHQ</h2>
+							<div>http://mongohq.com</div>
+							<div>Let mongodb gurus focus on mongodb</div>
+							<div>Let programmers focus on programming</div>
+							<div>
+								<br>
+							</div>
+							<div>Free 512MB databases for lab projects staging server etc</div>
+							<div>Use it with Heroku for a free deployment scenario</div>
+							<div>
+								<br>
+							</div>
+							<div>Great &nbsp;web interface</div>
+							<div>Automatic logging of slow queries</div>
+							<div>Automatic back ups</div>
+						</section>
+						<section>
+							<blockquote>In MongoDB, we give up relational DB features (e.g. arbitrary joins) for very fast writes, generally faster reads, and better denormalization support — we can store a card’s data in a single document in the database and still have the ability to query into (and index) subfields of the document. As we’ve grown quickly, having a database that can take a fair amount of abuse in terms of read and write capacity has been a very good thing. Also, MongoDB is really easy to replicate, back up, and restore.</blockquote>
+						</section>
+					</section>
+				</div>
+			</div>
+
+			<script src="lib/js/head.min.js"></script>
+			<script src="js/reveal.min.js"></script>
+
+			<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				width: 1140,
+        height: 900,
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Parallax scrolling
+				// parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+				// parallaxBackgroundSize: '2100px 900px',
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+				{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+				{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+				{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+				{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+				{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+</script>
+
+</body>
+</html>
